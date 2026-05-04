@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     default_model: str = "openai/gpt-5.4-nano"
     max_file_size_mb: int = 10
     max_history_messages: int = 4
+    max_tenant_history: int = 6
     tenants: str = contracts
 
     model_config = {"env_file": ".env"}
