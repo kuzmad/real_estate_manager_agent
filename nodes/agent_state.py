@@ -12,6 +12,7 @@ class AgentState(TypedDict):
     reason: Optional[str]
     tenant: Optional[str]
     tenant_history: Optional[dict] # {"hemotest": "...", "ozon": "..."}
+    assistant_history: Optional[list]
 
 llm = ChatOpenAI(
     model = settings.default_model,

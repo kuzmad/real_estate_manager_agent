@@ -14,5 +14,6 @@ class Settings(BaseSettings):
     max_history_messages: int = 4
     max_tenant_history: int = 6
     tenants: str = contracts
+    max_assistant_history: int = 6
 
     model_config = {"env_file": ".env"}
