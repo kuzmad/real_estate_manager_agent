@@ -7,7 +7,7 @@ router_prompt = ChatPromptTemplate.from_messages([
     (
         "system",
         """
-        Ты роутер запросов пользователя по упарвлению коммерческой недвижимостью.
+        Ты роутер запросов пользователя по управлению коммерческой недвижимостью.
 
         Тебе нужно определить, к какому маршруту относится запрос пользователя:
 
@@ -20,9 +20,6 @@ router_prompt = ChatPromptTemplate.from_messages([
         3. property_manager - если пользователь просит уточнить историю взаимодейтсаия с арендаторами: дата ремонта, даты поверки счетчиков, общие договоренности
             также пользователь может попросить зафиксировать какие-то договоренности
            Примеры: "Когда очередная поверка счетчиков в помещении Ozon", "Когда планируется ремонт в помещении WB", "Запомни: вчера была поверка счетчиков у WB"
-        
-        4. assistant - small talk, общие вопросы, все что не входит выше (fallback)
-            Примеры: "Как дела?", "Что такое ЕГРН?"
 
         Верни только структуру согласно схеме.
         """
@@ -37,7 +34,6 @@ class RouterSteps(str, Enum):
     LAWYER = "lawyer"
     FINANCIAL = "financial"
     PROPERTY_MANAGER = "property_manager"
-    ASSISTANT = "assistant"
 
 class RouteDecision(BaseModel):
     next_step: RouterSteps = Field(
@@ -50,7 +46,7 @@ class RouteDecision(BaseModel):
 router = router_prompt | llm.with_structured_output(RouteDecision)
 
 def router_node(state: AgentState) -> dict:
-    last_message = state["messages"][-1].content
+    last_message = state["work_question"][-1].content
     result = router.invoke({"query": last_message})
     return {
         "next_step": result.next_step.value,

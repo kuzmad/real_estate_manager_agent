@@ -22,12 +22,13 @@ lawyer_prompt = ChatPromptTemplate.from_messages([
 lawyer = lawyer_prompt | llm
 
 def lawyer_node(state: AgentState) -> dict:
-    last_message = state["messages"][-1].content
+    last_message = state["work_question"][-1].content
     docs = vectorstore.similarity_search(last_message, k=2)
     context = "\n\n".join([doc.page_content for doc in docs])
     result = lawyer.invoke({"query": last_message,
                             "context": context})
 
     return {
-        "messages": [AIMessage(content=result.content)]
+        "messages": [AIMessage(content=result.content)],
+        "partial_response": [result.content]
     }

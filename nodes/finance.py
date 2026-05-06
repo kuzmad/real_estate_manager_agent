@@ -40,8 +40,11 @@ finance_agent = create_agent(
 )
 
 def financial_node(state: AgentState) -> dict:
-    response = finance_agent.invoke({"messages": state["messages"]})
+    messages = state["work_question"]
+    last_message = messages[-1].content
+    response = finance_agent.invoke({"messages": last_message})
     #print(response["messages"]) #провека вызовов тулов
     return {
-       "messages": [response["messages"][-1]]
+       "messages": [response["messages"][-1]],
+       "partial_responses": [response["messages"][-1].content]
     }
