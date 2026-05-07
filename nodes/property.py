@@ -37,7 +37,7 @@ tenant_extractor = ChatPromptTemplate.from_messages([
 ]) | llm.with_structured_output(TenantDecision)
 
 def tenant_extractor_node(state: AgentState) -> dict:
-    messages = state["work_question"]
+    messages = state["work_questions"]
     last_message = messages[-1].content
     result = tenant_extractor.invoke({"query": last_message})
     #print(result.tenant_id)
@@ -74,7 +74,7 @@ def summarize_history_text(text: str) -> str:
     return response.content
 
 def property_manager_node(state: AgentState) -> dict:
-    messages = state["work_question"]
+    messages = state["work_questions"]
     last_message = messages[-1].content
     tenant_history = state.get("tenant_history") or {}
     tenant_id = state.get("tenant") or "general"
@@ -93,9 +93,7 @@ def property_manager_node(state: AgentState) -> dict:
         last_message,
         result.content
     )
-    #print(tenant_id, len(updated_history[tenant_id]))
-    #print(updated_history[tenant_id])
-    #print("\n")
+
     return {
         "messages": [AIMessage(content=result.content)],
         "tenant_history": updated_history,

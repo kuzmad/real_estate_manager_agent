@@ -25,11 +25,13 @@ def summarize_assistant_history(text: str) -> str:
     return response.content
 
 def assistant_node(state: AgentState) -> dict:
-    messages = state["small_talk"]
+    messages = state["small_talks"]
     last_message = messages[-1].content
 
     result = assistant.invoke({"history": messages[:-1], "query": last_message})
 
     return {
-        "messages": [AIMessage(content=result.content)]
+        "small_talks": state["small_talks"], #явно прокидываем, так как состояние передали через Send
+        "messages": [AIMessage(content=result.content)],
+        "next_step": "assistant",
     }

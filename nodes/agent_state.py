@@ -3,9 +3,19 @@ from langchain_openai import ChatOpenAI
 from settings import Settings
 from langgraph.graph.message import add_messages
 from langchain_core.messages import BaseMessage
-import operator
 
 settings = Settings()
+
+#Классичеcкие решения падают, если передается None
+def add_response(left: list | None, right: list | None) -> list:
+    left = left or []
+    right = right or []
+    return left + right
+
+def add_messages_safe(left: list | None, right: list | None) -> list:
+    left = left or []
+    right = right or []
+    return add_messages(left, right)
 
 #add_messages только для list[BaseMessage]
 class AgentState(TypedDict):
@@ -15,10 +25,13 @@ class AgentState(TypedDict):
     tenant: Optional[str]
     tenant_history: Optional[dict] # {"hemotest": "...", "ozon": "..."}
     assistant_history: Optional[list]
-    partial_responses: Annotated[list[str], operator.add]
+    partial_responses: Annotated[list[str], add_response]
     has_work_question: Optional[bool]
-    work_question: Annotated[list[BaseMessage], add_messages]
-    small_talk: Annotated[list[BaseMessage], add_messages]
+    has_small_talk: Optional[bool]
+    work_question: Optional[str]
+    small_talk: Optional[str]
+    work_questions: Annotated[list[BaseMessage], add_messages_safe]
+    small_talks: Annotated[list[BaseMessage], add_messages_safe]
 
 llm = ChatOpenAI(
     model = settings.default_model,

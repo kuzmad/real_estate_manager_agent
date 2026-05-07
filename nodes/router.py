@@ -46,9 +46,10 @@ class RouteDecision(BaseModel):
 router = router_prompt | llm.with_structured_output(RouteDecision)
 
 def router_node(state: AgentState) -> dict:
-    last_message = state["work_question"][-1].content
+    last_message = state["work_questions"][-1].content
     result = router.invoke({"query": last_message})
     return {
+        "work_questions": state["work_questions"], #явно прокидываем, так как состояние передали через Send
         "next_step": result.next_step.value,
         "reason": result.reason
     }
@@ -59,6 +60,6 @@ def router_node(state: AgentState) -> dict:
 def route_after_router(state: AgentState) -> str:
     next_step = state["next_step"]
     if next_step is None:
-        raise ValueError(f"Unext_step is None")
+        raise ValueError(f"Next_step is None")
     print(f"{next_step}_node")
     return f"{next_step}_node"

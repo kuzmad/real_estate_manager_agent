@@ -10,7 +10,7 @@ class WorkQuestionDecision(BaseModel):
         description="True если в сообщении есть рабочий вопрос про аренду, договора, финансы или юридические вопросы арнеды"
     )
     has_small_talk: bool = Field(
-        description="True если в сообщении есть small talk"
+        description="True если в сообщении есть small talk: приветствие, вопросы как дела, погоду, шутки, отвлеченные темы не относящиеся к рабочим вопросам"
     )
     work_question: Optional[str] = Field(
         default=None,
@@ -49,14 +49,16 @@ def route_work_small_talk(state: AgentState) -> list[Send]:
     sends = []
 
     if state.get("has_work_question"):
-        work_state = {**state, "work_question": [HumanMessage(content=state["work_question"])]}
+        work_state = {**state, "work_questions": [HumanMessage(content=state["work_question"])]}
         sends.append(Send("router_node", work_state))
     
     if state.get("has_small_talk"):
-        work_state = {**state, "small_talk": [HumanMessage(content=state["small_talk"])]}
+        work_state = {**state, "small_talks": [HumanMessage(content=state["small_talk"])]}
         sends.append(Send("assistant_node", work_state))
+        print(work_state["small_talks"], work_state["has_small_talk"])
 
     if not sends:
-        sends.append(Send("assistant_node", state))
+        work_state = {**state, "small_talks": [HumanMessage(content="Вопросов нет")]}
+        sends.append(Send("assistant_node", work_state))
 
     return sends

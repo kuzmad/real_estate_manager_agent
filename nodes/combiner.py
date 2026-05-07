@@ -16,6 +16,8 @@ combiner_prompt = ChatPromptTemplate.from_messages([
 combiner = combiner_prompt | llm
 
 def combiner_node(state: AgentState) -> dict:
+    number_of_messages = state["has_work_question"] + state["has_small_talk"]
+    print(number_of_messages, state["messages"][-number_of_messages:])
     partial_responses = state.get("partial_responses") or []
 
     if len(partial_responses) == 1:
