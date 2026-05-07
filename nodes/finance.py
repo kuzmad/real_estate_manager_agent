@@ -46,5 +46,4 @@ def financial_node(state: AgentState) -> dict:
     #print(response["messages"]) #провека вызовов тулов
     return {
        "messages": [response["messages"][-1]],
-       "partial_responses": [response["messages"][-1].content]
     }

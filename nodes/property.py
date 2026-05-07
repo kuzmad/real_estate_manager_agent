@@ -96,6 +96,5 @@ def property_manager_node(state: AgentState) -> dict:
 
     return {
         "messages": [AIMessage(content=result.content)],
-        "tenant_history": updated_history,
-        "partial_responses": [result.content]
+        "tenant_history": updated_history
     }

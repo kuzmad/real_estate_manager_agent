@@ -29,6 +29,5 @@ def lawyer_node(state: AgentState) -> dict:
                             "context": context})
 
     return {
-        "messages": [AIMessage(content=result.content)],
-        "partial_response": [result.content]
+        "messages": [AIMessage(content=result.content)]
     }

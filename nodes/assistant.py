@@ -33,5 +33,5 @@ def assistant_node(state: AgentState) -> dict:
     return {
         "small_talks": state["small_talks"], #явно прокидываем, так как состояние передали через Send
         "messages": [AIMessage(content=result.content)],
-        "next_step": "assistant",
+        "use_assistant": True
     }

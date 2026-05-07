@@ -55,7 +55,6 @@ def route_work_small_talk(state: AgentState) -> list[Send]:
     if state.get("has_small_talk"):
         work_state = {**state, "small_talks": [HumanMessage(content=state["small_talk"])]}
         sends.append(Send("assistant_node", work_state))
-        print(work_state["small_talks"], work_state["has_small_talk"])
 
     if not sends:
         work_state = {**state, "small_talks": [HumanMessage(content="Вопросов нет")]}

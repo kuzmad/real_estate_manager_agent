@@ -1,8 +1,9 @@
-from typing import Annotated, TypedDict, Optional
+from typing import Annotated, TypedDict, Optional, List
 from langchain_openai import ChatOpenAI
 from settings import Settings
 from langgraph.graph.message import add_messages
 from langchain_core.messages import BaseMessage
+from operator import add
 
 settings = Settings()
 
@@ -25,13 +26,13 @@ class AgentState(TypedDict):
     tenant: Optional[str]
     tenant_history: Optional[dict] # {"hemotest": "...", "ozon": "..."}
     assistant_history: Optional[list]
-    partial_responses: Annotated[list[str], add_response]
     has_work_question: Optional[bool]
     has_small_talk: Optional[bool]
     work_question: Optional[str]
     small_talk: Optional[str]
     work_questions: Annotated[list[BaseMessage], add_messages_safe]
     small_talks: Annotated[list[BaseMessage], add_messages_safe]
+    use_assistant: Optional[bool]
 
 llm = ChatOpenAI(
     model = settings.default_model,
