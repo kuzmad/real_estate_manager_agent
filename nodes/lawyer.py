@@ -1,7 +1,8 @@
 from langchain_core.prompts import ChatPromptTemplate
-from .agent_state import AgentState, llm
+from .agent_state import AgentState
 from rag.loader import load_vectorstore
 from langchain_core.messages import AIMessage
+from llm import llm
 
 vectorstore = load_vectorstore()
 

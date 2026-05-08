@@ -1,5 +1,4 @@
-from typing import Annotated, TypedDict, Optional, List
-from langchain_openai import ChatOpenAI
+from typing import Annotated, TypedDict, Optional
 from settings import Settings
 from langgraph.graph.message import add_messages
 from langchain_core.messages import BaseMessage
@@ -25,7 +24,6 @@ class AgentState(TypedDict):
     reason: Optional[str]
     tenant: Optional[str]
     tenant_history: Optional[dict] # {"hemotest": "...", "ozon": "..."}
-    assistant_history: Optional[list]
     has_work_question: Optional[bool]
     has_small_talk: Optional[bool]
     work_question: Optional[str]
@@ -33,9 +31,3 @@ class AgentState(TypedDict):
     work_questions: Annotated[list[BaseMessage], add_messages_safe]
     small_talks: Annotated[list[BaseMessage], add_messages_safe]
     use_assistant: Optional[bool]
-
-llm = ChatOpenAI(
-    model = settings.default_model,
-    temperature = 0,
-    base_url = settings.proxy_base_url
-    )

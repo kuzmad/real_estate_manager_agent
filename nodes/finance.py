@@ -1,6 +1,9 @@
 from langchain.agents import create_agent
-from .agent_state import AgentState, llm
+from .agent_state import AgentState
+from langchain_core.tools import tool
+from llm import llm
 
+@tool
 def calculate_quarterly_income(
         area: float,
         rate_per_sqm: float,
@@ -14,6 +17,7 @@ def calculate_quarterly_income(
     """
     return f"Доход за {months} месяцев: {rate_per_sqm * area * months: ,.2f} рублей"
 
+@tool
 def calculate_usn_tax(
         income: float,
         rate: float = 6.0

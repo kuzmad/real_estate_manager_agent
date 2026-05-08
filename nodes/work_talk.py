@@ -1,9 +1,10 @@
 from langgraph.types import Send
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import HumanMessage
-from .agent_state import AgentState, llm
+from .agent_state import AgentState
 from pydantic import BaseModel, Field
 from typing import Optional
+from llm import llm
 
 class WorkQuestionDecision(BaseModel):
     has_work_question: bool = Field(

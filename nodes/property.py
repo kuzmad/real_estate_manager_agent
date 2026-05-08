@@ -1,8 +1,10 @@
 from langchain_core.prompts import ChatPromptTemplate
-from .agent_state import AgentState, llm
+from .agent_state import AgentState
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from settings import Settings
 from pydantic import BaseModel, Field
+from llm import llm
+from utils import summarize_history
 
 settings = Settings()
 
@@ -59,19 +61,13 @@ def update_tenant_history(
     updated[tenant_id].append(f"Human: {user_message}")
     updated[tenant_id].append(f"Agent: {agent_response}")
 
-    if len(updated[tenant_id]) > settings.max_tenant_history:
-        history_text = "\n".join(updated[tenant_id][:-2])  # всё кроме последнего обмена
-        summary = summarize_history_text(history_text)
+    #суммаризация если нужно
+    if len(updated[tenant_id][:-2]) > settings.max_tenant_history:
+        summary = summarize_history(updated[tenant_id][:-2])
         updated[tenant_id] = [f"Сводка: {summary}"] + updated[tenant_id][-2:]
 
     return updated
 
-def summarize_history_text(text: str) -> str:
-    response = llm.invoke([
-        SystemMessage(content="Сожми историю взаимодействия с арендатором, сохранив ключевые даты и события."),
-        HumanMessage(content=f"История:\n{text}")
-    ])
-    return response.content
 
 def property_manager_node(state: AgentState) -> dict:
     messages = state["work_questions"]

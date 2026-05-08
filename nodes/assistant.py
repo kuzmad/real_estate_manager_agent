@@ -1,6 +1,11 @@
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-from .agent_state import AgentState, llm
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from .agent_state import AgentState
+from llm import llm
+from utils import summarize_history
+from settings import Settings
+
+settings = Settings()
 
 assistant_prompt = ChatPromptTemplate.from_messages([
     ("system", 
@@ -17,21 +22,30 @@ assistant_prompt = ChatPromptTemplate.from_messages([
 
 assistant = assistant_prompt | llm
 
-def summarize_assistant_history(text: str) -> str:
-    response = llm.invoke([
-        SystemMessage(content="Сожми историю взаимодействия сохранив основную информаию и ключевые моменты"),
-        HumanMessage(content=f"История:\n{text}")
-    ])
-    return response.content
-
 def assistant_node(state: AgentState) -> dict:
     messages = state["small_talks"]
     last_message = messages[-1].content
 
-    result = assistant.invoke({"history": messages[:-1], "query": last_message})
+    history_text = "\n".join([
+        f"{'Human' if isinstance(m, HumanMessage) else 'Agent'}: {m.content}"
+        for m in messages[:-1]
+    ])
+
+    result = assistant.invoke({"history": history_text, "query": last_message})
+
+    ai_response = AIMessage(content=result.content)
+    updated_talks = list(messages) + [ai_response]
+
+    #суммаризация если нужно
+    if len(updated_talks[:-1]) > settings.max_history_messages:
+        summary = summarize_history(updated_talks[:-1])
+        updated_talks = [
+            SystemMessage(content=f"Сводка: {summary}"),
+            updated_talks[-1]  # только последний обмен
+        ]
 
     return {
-        "small_talks": state["small_talks"], #явно прокидываем, так как состояние передали через Send
-        "messages": [AIMessage(content=result.content)],
+        "small_talks": updated_talks, #явно прокидываем, так как состояние передали через Send
+        "messages": [ai_response],
         "use_assistant": True
     }

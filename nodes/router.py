@@ -1,7 +1,8 @@
 from enum import Enum
 from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
-from .agent_state import AgentState, llm
+from .agent_state import AgentState
+from llm import llm
 
 router_prompt = ChatPromptTemplate.from_messages([
     (
