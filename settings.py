@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from pathlib import Path
 
+ROOT_DIR = Path(__file__).parent
 CONTRACTS_DIR = Path(__file__).parent.parent / "contracts"
 contracts = [file.stem for file in CONTRACTS_DIR.glob("*.txt")]
 contracts = ', '.join(contracts)
@@ -15,4 +16,4 @@ class Settings(BaseSettings):
     max_tenant_history: int = 6
     tenants: str = contracts
 
-    model_config = {"env_file": ".env"}
+    model_config = {"env_file": str(ROOT_DIR / ".env")}

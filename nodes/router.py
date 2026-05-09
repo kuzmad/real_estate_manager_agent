@@ -62,5 +62,4 @@ def route_after_router(state: AgentState) -> str:
     next_step = state["next_step"]
     if next_step is None:
         raise ValueError(f"Next_step is None")
-    print(f"{next_step}_node")
     return f"{next_step}_node"
