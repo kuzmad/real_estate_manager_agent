@@ -16,3 +16,16 @@ def summarize_history(messages: list) -> str:
         return response.content
     else:
         return messages
+    
+def determine_last_agent(values: dict) -> str:
+    has_work = values.get("has_work_question", False)
+    has_talk = values.get("has_small_talk", False)
+    next_step = values.get("next_step")
+
+    if has_work and has_talk:
+        return f"combiner ({next_step} + assistant)"
+    elif has_talk and not has_work:
+        return "assistant"
+    elif has_work and next_step:
+        return next_step
+    return "unknown"

@@ -4,8 +4,7 @@ from pydantic import BaseModel
 from langchain_core.messages import HumanMessage, AIMessageChunk
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver #тут версия с async
 from api.graph import build_graph
-import json
-
+from utils import determine_last_agent
 from settings import Settings
 
 settings = Settings()
@@ -53,14 +52,14 @@ async def get_state(thread_id: str):
     async with AsyncSqliteSaver.from_conn_string("memory.db") as checkpointer:
         graph = build_graph(checkpointer)
         config = {"configurable": {"thread_id": thread_id}}
-        state = await graph.get_state(config)
+        state = await graph.aget_state(config)
         
         if not state or not state.values:
             return {"error": "Стейт не найден"}
         
         values = state.values
         return {
-            "last_route": values.get("next_step"),
+            "last_route": determine_last_agent(values),
             "tenant": values.get("tenant"),
             "tenant_history": values.get("tenant_history", {}),
             "messages": [
